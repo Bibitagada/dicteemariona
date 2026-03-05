@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mots de la Dictée - CM1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4A90A4;
+            --primary-light: #6BB3C9;
+            --secondary: #F5A623;
+            --success: #7CB342;
+            --warning: #FF9800;
+            --danger: #E57373;
+            --bg-cream: #FFF9F0;
+            --bg-light: #F0F7FA;
+            --text-dark: #2C3E50;
+            --text-medium: #5D6D7E;
+            --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow-medium: 0 6px 25px rgba(0,0,0,0.12);
+            --radius-small: 12px;
+            --radius-medium: 16px;
+            --radius-large: 24px;
+            --level-1: #7CB342; --level-1-light: #AED581;
+            --level-2: #FF9800; --level-2-light: #FFCC80;
+            --level-3: #E57373; --level-3-light: #FFCDD2;
+            --period-1: #81D4FA; --period-2: #A5D6A7; --period-3: #FFE082; --period-4: #FFAB91; --period-5: #CE93D8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Nunito', sans-serif; background: linear-gradient(135deg, var(--bg-cream) 0%, var(--bg-light) 100%); min-height: 100vh; color: var(--text-dark); line-height: 1.6; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 20px; text-align: center; box-shadow: var(--shadow-medium); position: sticky; top: 0; z-index: 100; }
+        .header h1 { font-family: 'Fredoka One', cursive; color: white; font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .breadcrumb-item { background: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 20px; font-weight: 600; color: var(--primary); cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .breadcrumb-item:hover { background: white; transform: scale(1.05); }
+        .breadcrumb-separator { color: white; font-size: 1.1rem; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 25px 15px; }
+        .welcome-message { text-align: center; margin-bottom: 35px; padding: 25px; background: white; border-radius: var(--radius-large); box-shadow: var(--shadow-soft); }
+        .welcome-message h2 { font-family: 'Fredoka One', cursive; color: var(--primary); font-size: 1.6rem; margin-bottom: 12px; }
+        .welcome-message p { font-size: 1.1rem; color: var(--text-medium); }
+        .welcome-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .periods-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 18px; margin-top: 25px; }
+        .period-card { background: white; border-radius: var(--radius-large); padding: 25px 18px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 4px solid transparent; position: relative; overflow: hidden; }
+        .period-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+        .period-card[data-period="1"]::before { background: var(--period-1); }
+        .period-card[data-period="2"]::before { background: var(--period-2); }
+        .period-card[data-period="3"]::before { background: var(--period-3); }
+        .period-card[data-period="4"]::before { background: var(--period-4); }
+        .period-card[data-period="5"]::before { background: var(--period-5); }
+        .period-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-medium); }
+        .period-card[data-period="1"]:hover { border-color: var(--period-1); }
+        .period-card[data-period="2"]:hover { border-color: var(--period-2); }
+        .period-card[data-period="3"]:hover { border-color: var(--period-3); }
+        .period-card[data-period="4"]:hover { border-color: var(--period-4); }
+        .period-card[data-period="5"]:hover { border-color: var(--period-5); }
+        .period-card .icon { font-size: 3rem; margin-bottom: 12px; }
+        .period-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--text-dark); }
+        .period-card .subtitle { font-size: 0.85rem; color: var(--text-medium); margin-top: 6px; }
+        .period-card.disabled { opacity: 0.5; cursor: not-allowed; }
+        .period-card.disabled:hover { transform: none; box-shadow: var(--shadow-soft); border-color: transparent; }
+        .coming-soon-badge { background: var(--warning); color: white; padding: 3px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-top: 8px; display: inline-block; }
+        .weeks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-top: 25px; }
+        .week-card { background: white; border-radius: var(--radius-medium); padding: 20px 12px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 3px solid transparent; }
+        .week-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-medium); border-color: var(--secondary); }
+        .week-card .icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .week-card h4 { font-weight: 700; font-size: 1rem; color: var(--text-dark); }
+        .week-card .theme { font-size: 0.8rem; color: var(--text-medium); margin-top: 4px; }
+        .section-title { text-align: center; margin-bottom: 25px; }
+        .section-title h2 { font-family: 'Fredoka One', cursive; font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .section-title p { color: var(--text-medium); font-size: 1rem; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 35px; }
+        .game-card { background: white; border-radius: var(--radius-large); padding: 22px 14px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-soft); border: 3px solid transparent; }
+        .game-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-medium); border-color: var(--secondary); }
+        .game-card .icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .game-card h4 { font-weight: 700; font-size: 0.95rem; color: var(--text-dark); line-height: 1.3; }
+        .words-section { background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); margin-top: 35px; overflow-x: auto; }
+        .words-section h3 { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--primary); margin-bottom: 18px; text-align: center; }
+        .method-card { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border-radius: var(--radius-large); padding: 20px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-medium); margin-bottom: 25px; }
+        .method-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(17, 153, 142, 0.4); }
+        .method-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: white; margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .method-card .subtitle { color: rgba(255,255,255,0.9); font-size: 0.95rem; margin-top: 8px; }
+        .method-card .arrow { font-size: 1.5rem; transition: transform 0.3s ease; }
+        .method-card.open .arrow { transform: rotate(180deg); }
+        .method-content { display: none; background: white; border-radius: var(--radius-large); padding: 30px; box-shadow: var(--shadow-soft); margin-bottom: 25px; }
+        .method-content.visible { display: block; }
+        .method-step { display: flex; align-items: flex-start; gap: 15px; padding: 18px; margin-bottom: 15px; border-radius: var(--radius-medium); transition: all 0.2s ease; }
+        .method-step:nth-child(1) { background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%); border-left: 5px solid #e53935; }
+        .method-step:nth-child(2) { background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left: 5px solid #FF9800; }
+        .method-step:nth-child(3) { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left: 5px solid #4CAF50; }
+        .method-step:nth-child(4) { background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-left: 5px solid #2196F3; }
+        .method-step:nth-child(5) { background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%); border-left: 5px solid #9C27B0; }
+        .method-step:nth-child(6) { background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%); border-left: 5px solid #E91E63; }
+        .method-step:nth-child(7) { background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); border-left: 5px solid #00BCD4; }
+        .method-step:nth-child(8) { background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left: 5px solid #FF5722; }
+        .method-step .step-icon { font-size: 2.5rem; flex-shrink: 0; }
+        .method-step .step-content { flex: 1; }
+        .method-step .step-title { font-family: 'Fredoka One', cursive; font-size: 1.15rem; color: var(--text-dark); margin-bottom: 5px; }
+        .method-step .step-text { font-size: 1rem; color: var(--text-medium); line-height: 1.5; }
+        .method-reminder { background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border: 3px solid #e53935; border-radius: var(--radius-large); padding: 20px 25px; margin-top: 20px; }
+        .method-reminder h4 { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: #c62828; margin-bottom: 15px; text-align: center; }
+        .method-reminder ul { list-style: none; padding: 0; margin: 0; }
+        .method-reminder li { font-size: 1.05rem; color: var(--text-dark); padding: 8px 0; display: flex; align-items: center; gap: 10px; }
+        .method-reminder li::before { content: '✔️'; font-size: 1.2rem; }
+        .fiche-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: var(--radius-large); padding: 20px 25px; text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: var(--shadow-medium); margin-bottom: 25px; }
+        .fiche-card:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4); }
+        .fiche-card h3 { font-family: 'Fredoka One', cursive; font-size: 1.4rem; color: white; margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .fiche-card .subtitle { color: rgba(255,255,255,0.85); font-size: 0.95rem; margin-top: 8px; }
+        .fiche-card .arrow { font-size: 1.5rem; transition: transform 0.3s ease; }
+        .fiche-card.open .arrow { transform: rotate(180deg); }
+        .fiche-content { display: none; background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); margin-bottom: 25px; animation: slideDown 0.3s ease; }
+        .fiche-content.visible { display: block; }
+        .words-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .words-table th { background: var(--primary); color: white; padding: 12px 10px; text-align: left; font-weight: 700; }
+        .words-table th:first-child { border-radius: 10px 0 0 0; }
+        .words-table th:last-child { border-radius: 0 10px 0 0; }
+        .words-table td { padding: 10px; border-bottom: 1px solid #E8E8E8; }
+        .words-table tr:nth-child(even) { background: var(--bg-light); }
+        .word-type { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; }
+        .word-type.nom { background: #C8E6C9; color: #2E7D32; }
+        .word-type.verbe { background: #e53935; color: white; }
+        .word-type.adjectif { background: #FF9800; color: white; }
+        .word-type.invariable { background: #9C27B0; color: white; }
+        .word-type.determinant { background: #1565C0; color: white; }
+        .word-type.pronom { background: #B3E5FC; color: #0277BD; }
+        .word-clickable { cursor: pointer; color: var(--primary); transition: all 0.2s ease; font-size: 1.05rem; }
+        .word-clickable:hover { color: var(--secondary); text-decoration: underline; }
+        .exemple-box { display: none; background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 100%); border: 2px solid var(--secondary); padding: 12px 18px; margin-top: 8px; border-radius: 12px; font-style: italic; color: var(--text-dark); font-size: 1rem; }
+        .exemple-box.visible { display: block; }
+        .exemple-box::before { content: '💬 '; }
+        .types-container { display: flex; gap: 5px; flex-wrap: wrap; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .game-page { background: white; border-radius: var(--radius-large); padding: 25px; box-shadow: var(--shadow-soft); }
+        .game-header { text-align: center; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 2px dashed #E8E8E8; }
+        .game-header h2 { font-family: 'Fredoka One', cursive; font-size: 1.6rem; color: var(--primary); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .game-instruction { background: var(--bg-light); padding: 12px 18px; border-radius: var(--radius-medium); font-size: 1rem; color: var(--text-medium); margin-bottom: 18px; }
+        .level-selector { display: flex; justify-content: center; gap: 12px; margin-bottom: 25px; flex-wrap: wrap; }
+        .level-btn { padding: 10px 24px; border: none; border-radius: 22px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; }
+        .level-btn.level-1 { background: var(--level-1-light); color: #33691E; }
+        .level-btn.level-1:hover, .level-btn.level-1.active { background: var(--level-1); color: white; transform: scale(1.05); }
+        .level-btn.level-2 { background: var(--level-2-light); color: #E65100; }
+        .level-btn.level-2:hover, .level-btn.level-2.active { background: var(--level-2); color: white; transform: scale(1.05); }
+        .level-btn.level-3 { background: var(--level-3-light); color: #B71C1C; }
+        .level-btn.level-3:hover, .level-btn.level-3.active { background: var(--level-3); color: white; transform: scale(1.05); }
+        .game-area { min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn { padding: 10px 22px; border: none; border-radius: 22px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); transform: scale(1.05); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: #F5B942; transform: scale(1.05); }
+        .btn-back { background: #E8E8E8; color: var(--text-dark); margin-top: 18px; }
+        .btn-back:hover { background: #D0D0D0; }
+        .hangman-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; letter-spacing: 12px; color: var(--primary); margin: 25px 0; word-break: break-all; }
+        .hangman-lives { font-size: 1.8rem; margin-bottom: 15px; }
+        .keyboard { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 450px; }
+        .key-btn { width: 40px; height: 40px; border: none; border-radius: 8px; background: var(--bg-light); font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
+        .key-btn:hover:not(:disabled) { background: var(--primary); color: white; transform: scale(1.1); }
+        .key-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .key-btn.correct { background: var(--success); color: white; }
+        .key-btn.wrong { background: var(--danger); color: white; }
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 420px; margin: 18px auto; }
+        .memory-card { aspect-ratio: 1; background: var(--primary); border-radius: var(--radius-medium); cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: white; min-height: 70px; }
+        .memory-card.flipped { background: white; border: 3px solid var(--primary); }
+        .memory-card.flipped .card-content { display: flex; }
+        .memory-card.matched { background: var(--success); border-color: var(--success); }
+        .memory-card .card-content { display: none; font-size: 0.75rem; color: var(--text-dark); text-align: center; padding: 6px; font-weight: 600; word-break: break-word; }
+        .memory-card .card-back { font-size: 1.8rem; }
+        .memory-card.flipped .card-back { display: none; }
+        .race-track { width: 100%; height: 70px; background: linear-gradient(to right, #C8E6C9, #A5D6A7); border-radius: 35px; position: relative; margin: 25px 0; overflow: hidden; border: 3px solid #81C784; }
+        .race-runner { position: absolute; left: 5%; top: 50%; transform: translateY(-50%); font-size: 2.2rem; transition: left 0.3s ease; }
+        .race-finish { position: absolute; right: 5%; top: 50%; transform: translateY(-50%); font-size: 1.8rem; }
+        .race-word { font-family: 'Fredoka One', cursive; font-size: 1.8rem; color: var(--primary); margin: 18px 0; }
+        .race-input { padding: 12px 22px; font-size: 1.2rem; border: 3px solid var(--primary); border-radius: 12px; font-family: 'Nunito', sans-serif; text-align: center; width: 280px; max-width: 100%; }
+        .race-input:focus { outline: none; border-color: var(--secondary); }
+        .race-timer { font-family: 'Fredoka One', cursive; font-size: 1.3rem; color: var(--warning); }
+        .anagram-letters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 18px 0; }
+        .letter-tile { width: 44px; height: 44px; background: var(--secondary); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; }
+        .letter-tile:hover:not(.used) { transform: scale(1.1); background: var(--primary); }
+        .letter-tile.used { opacity: 0.3; cursor: not-allowed; }
+        .answer-zone { min-height: 55px; border: 3px dashed var(--primary); border-radius: 12px; padding: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 18px 0; min-width: 220px; }
+        .answer-letter { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka One', cursive; font-size: 1.2rem; cursor: pointer; text-transform: uppercase; }
+        .qcm-sentence { font-size: 1.2rem; text-align: center; margin: 25px 0; line-height: 1.7; }
+        .qcm-blank { display: inline-block; min-width: 100px; border-bottom: 3px solid var(--primary); margin: 0 4px; }
+        .qcm-options { display: flex; flex-direction: column; gap: 12px; max-width: 350px; margin: 0 auto; }
+        .qcm-option { padding: 12px 22px; background: var(--bg-light); border: 3px solid transparent; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .qcm-option:hover { border-color: var(--primary); background: white; }
+        .qcm-option.correct { background: var(--success); color: white; border-color: var(--success); }
+        .qcm-option.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+        .quiz-word { font-family: 'Fredoka One', cursive; font-size: 2.2rem; color: var(--primary); margin: 25px 0; }
+        .nature-options { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+        .nature-btn { padding: 12px 25px; border: none; border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; }
+        .nature-btn.nom { background: #C8E6C9; color: #2E7D32; }
+        .nature-btn.verbe { background: #e53935; color: white; }
+        .nature-btn.adjectif { background: #FF9800; color: white; }
+        .nature-btn.invariable { background: #9C27B0; color: white; }
+        .nature-btn:hover { transform: scale(1.05); box-shadow: var(--shadow-medium); }
+        .nature-btn.correct { background: var(--success) !important; color: white !important; }
+        .nature-btn.wrong { background: var(--danger) !important; color: white !important; }
+        .crossword-container { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+        .crossword-grid { display: grid; gap: 2px; background: var(--text-dark); padding: 2px; border-radius: 6px; }
+        .crossword-cell { width: 36px; height: 36px; background: white; border: none; text-align: center; font-family: 'Nunito', sans-serif; font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+        .crossword-cell:focus { outline: 3px solid var(--secondary); }
+        .crossword-cell.blocked { background: var(--text-dark); }
+        .crossword-cell.given { background: var(--bg-light); color: var(--primary); }
+        .crossword-clues { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; }
+        .clue-group h4 { color: var(--primary); margin-bottom: 8px; font-size: 1rem; }
+        .clue-item { font-size: 0.85rem; margin-bottom: 6px; padding-left: 8px; }
+        .catch-game { width: 100%; height: 350px; background: linear-gradient(to bottom, #87CEEB 0%, #B3E5FC 50%, #E1F5FE 100%); border-radius: var(--radius-large); position: relative; overflow: hidden; }
+        .falling-word { position: absolute; padding: 10px 18px; background: white; border-radius: 20px; font-weight: 700; font-size: 1rem; cursor: pointer; box-shadow: var(--shadow-soft); user-select: none; z-index: 10; }
+        .falling-word:hover { transform: scale(1.1); background: #ffffcc; }
+        .falling-word.correct { background: var(--success) !important; color: white; }
+        .falling-word.wrong { background: var(--danger) !important; color: white; }
+        .catch-score { position: absolute; top: 12px; right: 15px; background: white; padding: 8px 16px; border-radius: 18px; font-weight: 700; font-size: 1.1rem; }
+        .catch-timer { position: absolute; top: 12px; left: 15px; background: white; padding: 8px 16px; border-radius: 18px; font-weight: 700; font-size: 1.1rem; }
+        .score-display { font-family: 'Fredoka One', cursive; font-size: 1.2rem; color: var(--primary); margin: 12px 0; }
+        .feedback { padding: 18px 25px; border-radius: var(--radius-medium); font-size: 1.2rem; font-weight: 700; text-align: center; margin: 18px 0; }
+        .feedback.success { background: #E8F5E9; color: #2E7D32; }
+        .feedback.error { background: #FFEBEE; color: #C62828; }
+        .feedback.info { background: #E3F2FD; color: #1565C0; }
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.4rem; }
+            .periods-grid, .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .memory-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .hangman-word { font-size: 1.6rem; letter-spacing: 8px; }
+            .key-btn { width: 34px; height: 34px; font-size: 0.95rem; }
+            .words-table { font-size: 0.8rem; }
+            .words-table th, .words-table td { padding: 6px 4px; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>📚 MOTS DE LA DICTÉE – Période 4</h1>
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="breadcrumb-item" onclick="goHome()">🏠 Accueil</span>
+        </div>
+    </header>
+    <main class="container" id="main-content"></main>
+    <script>
+// ==================== DONNÉES ====================
+const periodsData = {
+    4: { 
+        name: "Période 4", icon: "🌷", available: true,
+        weeks: {
+            17: { theme: "Carnaval", words: [
+                { word: "un masque", type: "determinant+nom", definition: "Objet qu'on met sur le visage pour se déguiser", exemple: "Je porte un masque de super-héros pour le carnaval." },
+                { word: "un déguisement", type: "determinant+nom", definition: "Costume pour ressembler à quelqu'un d'autre", exemple: "Mon déguisement de pirate est très réussi." },
+                { word: "un confetti", type: "determinant+nom", definition: "Petit morceau de papier coloré qu'on jette", exemple: "On lance des confettis pendant le défilé." },
+                { word: "du maquillage", type: "determinant+nom", definition: "Produit pour se colorer le visage", exemple: "Le maquillage me transforme en tigre." },
+                { word: "festif / festive", type: "adjectif", definition: "Qui fait la fête, joyeux", exemple: "L'ambiance est très festive au carnaval." },
+                { word: "défiler", type: "verbe", definition: "Marcher en groupe dans la rue", exemple: "Les chars vont défiler dans la ville." },
+                { word: "sortir", type: "verbe", definition: "Aller dehors", exemple: "On va sortir pour voir le défilé." },
+                { word: "se retrouver", type: "verbe", definition: "Se rejoindre, se revoir", exemple: "On va se retrouver sur la place du village." },
+                { word: "chanter", type: "verbe", definition: "Faire de la musique avec sa voix", exemple: "Les enfants chantent pendant le carnaval." },
+                { word: "jeter", type: "verbe", definition: "Lancer", exemple: "On jette des confettis en l'air." }
+            ]},
+            18: { theme: "Plante (Le potager)", words: [
+                { word: "une graine", type: "determinant+nom", definition: "Petite chose qu'on plante pour faire pousser", exemple: "Je plante une graine de tomate." },
+                { word: "le printemps", type: "determinant+nom", definition: "Saison après l'hiver où tout repousse", exemple: "Au printemps, les fleurs apparaissent." },
+                { word: "un grand-père", type: "determinant+nom", definition: "Le papa de papa ou de maman", exemple: "Mon grand-père m'apprend à jardiner." },
+                { word: "le potager", type: "determinant+nom", definition: "Jardin où on fait pousser des légumes", exemple: "Dans le potager, il y a des carottes." },
+                { word: "un plant", type: "determinant+nom", definition: "Jeune plante à repiquer", exemple: "Je mets le plant de tomate en terre." },
+                { word: "le soleil", type: "determinant+nom", definition: "Étoile qui nous éclaire et nous réchauffe", exemple: "Le soleil aide les plantes à pousser." },
+                { word: "l'été", type: "determinant+nom", definition: "Saison la plus chaude", exemple: "L'été, on récolte les tomates." },
+                { word: "un fruit", type: "determinant+nom", definition: "Ce qui pousse sur un arbre (pomme, poire...)", exemple: "La pomme est un fruit délicieux." },
+                { word: "un légume", type: "determinant+nom", definition: "Plante qu'on mange (carotte, salade...)", exemple: "La carotte est un légume orange." },
+                { word: "laisser", type: "verbe", definition: "Ne pas toucher, permettre", exemple: "Il faut laisser les plantes au soleil." },
+                { word: "planter", type: "verbe", definition: "Mettre en terre pour faire pousser", exemple: "On va planter des graines de radis." },
+                { word: "arroser", type: "verbe", definition: "Mettre de l'eau sur les plantes", exemple: "Je dois arroser le potager tous les soirs." },
+                { word: "se régaler", type: "verbe", definition: "Manger avec plaisir", exemple: "On va se régaler avec ces bons légumes !" }
+            ]},
+            19: { theme: "Plante (Les fleurs)", words: [
+                { word: "un pétale", type: "determinant+nom", definition: "Partie colorée d'une fleur", exemple: "Cette rose a de beaux pétales rouges." },
+                { word: "l'herbe", type: "determinant+nom", definition: "Plantes vertes qui couvrent le sol", exemple: "L'herbe du jardin est bien verte." },
+                { word: "le pied", type: "determinant+nom", definition: "Base d'une plante", exemple: "Le pied de la fleur est bien ancré." },
+                { word: "un bouquet", type: "determinant+nom", definition: "Ensemble de fleurs coupées", exemple: "J'offre un bouquet de fleurs à maman." },
+                { word: "une fleur", type: "determinant+nom", definition: "Partie colorée d'une plante", exemple: "Cette fleur sent très bon." },
+                { word: "magnifique", type: "adjectif", definition: "Très très beau", exemple: "Ce jardin est magnifique !" },
+                { word: "aromatique", type: "adjectif", definition: "Qui a une bonne odeur, parfumé", exemple: "Le thym est une plante aromatique." },
+                { word: "fruitier / fruitière", type: "adjectif", definition: "Qui donne des fruits", exemple: "Le pommier est un arbre fruitier." },
+                { word: "parfumé / parfumée", type: "adjectif", definition: "Qui sent bon", exemple: "La rose est une fleur parfumée." },
+                { word: "faner", type: "verbe", definition: "Perdre sa fraîcheur (pour une fleur)", exemple: "Les fleurs vont faner sans eau." },
+                { word: "ramasser", type: "verbe", definition: "Prendre par terre", exemple: "Je ramasse des fleurs dans le champ." },
+                { word: "pousser", type: "verbe", definition: "Grandir (pour une plante)", exemple: "Les fleurs poussent au printemps." }
+            ]},
+            20: { theme: "Le royaume", words: [
+                { word: "un roi", type: "determinant+nom", definition: "Chef d'un royaume", exemple: "Le roi habite dans un grand château." },
+                { word: "une reine", type: "determinant+nom", definition: "Femme du roi ou chef d'un royaume", exemple: "La reine porte une belle couronne." },
+                { word: "un bourgeois", type: "determinant+nom", definition: "Personne riche des villes autrefois", exemple: "Le bourgeois possédait une grande maison." },
+                { word: "un noble", type: "determinant+nom", definition: "Personne importante proche du roi", exemple: "Le noble vivait à la cour du roi." },
+                { word: "la cour", type: "determinant+nom", definition: "Ensemble des personnes autour du roi", exemple: "La cour du roi était très élégante." },
+                { word: "le pouvoir", type: "determinant+nom", definition: "Capacité de commander", exemple: "Le roi avait tout le pouvoir." },
+                { word: "la guerre", type: "determinant+nom", definition: "Combat entre des pays ou des armées", exemple: "La guerre apporte beaucoup de malheur." },
+                { word: "la paix", type: "determinant+nom", definition: "Quand il n'y a pas de guerre", exemple: "Tout le monde préfère vivre en paix." },
+                { word: "régner", type: "verbe", definition: "Gouverner comme roi ou reine", exemple: "Louis XIV a régné très longtemps." },
+                { word: "donner", type: "verbe", definition: "Offrir quelque chose à quelqu'un", exemple: "Le roi va donner un ordre." },
+                { word: "détester", type: "verbe", definition: "Ne pas aimer du tout", exemple: "Le peuple détestait ce roi cruel." },
+                { word: "surnommer", type: "verbe", definition: "Donner un autre nom", exemple: "On l'a surnommé le Roi-Soleil." },
+                { word: "il est né / elle est née", type: "verbe", definition: "Venir au monde", exemple: "Le prince est né au château." }
+            ]},
+            21: { theme: "Les émotions", words: [
+                { word: "le bonheur", type: "determinant+nom", definition: "Grande joie, être très content", exemple: "Les vacances me donnent du bonheur." },
+                { word: "tout le monde", type: "nom", definition: "Toutes les personnes", exemple: "Tout le monde est content aujourd'hui." },
+                { word: "sourire", type: "verbe", definition: "Montrer sa joie avec la bouche", exemple: "Tu as un beau sourire !" },
+                { word: "pleurer", type: "verbe", definition: "Avoir des larmes qui coulent", exemple: "Je pleure quand je suis triste." },
+                { word: "avoir envie", type: "verbe", definition: "Vouloir quelque chose", exemple: "J'ai envie de jouer avec mes amis." },
+                { word: "être énervé", type: "verbe", definition: "Être agacé, pas content", exemple: "Je suis énervé quand on me dérange." },
+                { word: "être en colère", type: "verbe", definition: "Être très fâché", exemple: "Papa est en colère quand je mens." },
+                { word: "être triste", type: "verbe", definition: "Avoir du chagrin", exemple: "Je suis triste quand mon ami part." },
+                { word: "être joyeux", type: "verbe", definition: "Être content, gai", exemple: "Je suis joyeux le jour de mon anniversaire." },
+                { word: "être heureux", type: "verbe", definition: "Avoir du bonheur", exemple: "Je suis heureux avec ma famille." },
+                { word: "pendant", type: "invariable", definition: "Durant, au cours de", exemple: "Pendant les vacances, je me repose." },
+                { word: "dehors", type: "invariable", definition: "À l'extérieur", exemple: "On joue dehors quand il fait beau." },
+                { word: "toujours", type: "invariable", definition: "Tout le temps, sans arrêt", exemple: "Je suis toujours content de te voir." },
+                { word: "souvent", type: "invariable", definition: "Fréquemment, beaucoup de fois", exemple: "Je joue souvent avec mes amis." },
+                { word: "maintenant", type: "invariable", definition: "En ce moment", exemple: "Maintenant, je fais mes devoirs." },
+                { word: "soudain", type: "invariable", definition: "Tout à coup, brusquement", exemple: "Soudain, il s'est mis à pleuvoir." },
+                { word: "demain", type: "invariable", definition: "Le jour après aujourd'hui", exemple: "Demain, c'est mercredi !" },
+                { word: "autrefois", type: "invariable", definition: "Dans le passé, il y a longtemps", exemple: "Autrefois, il n'y avait pas de voitures." },
+                { word: "parfois", type: "invariable", definition: "De temps en temps", exemple: "Parfois, je suis un peu fatigué." },
+                { word: "quelquefois", type: "invariable", definition: "De temps en temps", exemple: "Quelquefois, on va au parc." },
+                { word: "ensuite", type: "invariable", definition: "Après, puis", exemple: "Je mange, ensuite je joue." },
+                { word: "puis", type: "invariable", definition: "Après, ensuite", exemple: "Je me lève, puis je me lave." },
+                { word: "depuis", type: "invariable", definition: "À partir d'un moment", exemple: "J'habite ici depuis trois ans." },
+                { word: "mais", type: "invariable", definition: "Cependant, par contre", exemple: "J'aime le chocolat mais pas trop." },
+                { word: "jamais", type: "invariable", definition: "À aucun moment", exemple: "Je ne mens jamais." },
+                { word: "enfin", type: "invariable", definition: "Pour finir, à la fin", exemple: "Enfin, les vacances arrivent !" }
+            ]}
+        }
+    }
+};
+const gamesConfig = [
+    { id: "pendu", name: "Jeu du pendu", icon: "🎯", instruction: "Clique sur les lettres pour deviner le mot !" },
+    { id: "memory", name: "Memory", icon: "🃏", instruction: "Retrouve les paires mot + définition !" },
+    { id: "course", name: "Course de mots", icon: "🏃", instruction: "Tape le mot avant la fin du temps !" },
+    { id: "anagramme", name: "Mots mélangés", icon: "🔀", instruction: "Remets les lettres dans l'ordre !" },
+    { id: "qcm", name: "Dictée flash", icon: "✏️", instruction: "Choisis la bonne orthographe !" },
+    { id: "nature", name: "Nature du mot", icon: "🏷️", instruction: "Nom, verbe, adjectif ou invariable ?" },
+    { id: "croises", name: "Mots croisés", icon: "📝", instruction: "Remplis la grille !" },
+    { id: "attrape", name: "Attrape-mot", icon: "🎮", instruction: "Clique sur les mots de la dictée !" }
+];
+
+let currentState = { page: 'home', period: null, week: null, game: null, level: 1 };
+let gameState = {};
+
+// ==================== NAVIGATION ====================
+function goHome() { currentState = { page: 'home', period: null, week: null, game: null, level: 1 }; renderPage(); }
+function goToPeriod(p) { if (!periodsData[p].available) return; currentState = { page: 'period', period: p, week: null, game: null, level: 1 }; renderPage(); }
+function goToWeek(w) { currentState.page = 'week'; currentState.week = w; currentState.game = null; renderPage(); }
+function goToGame(g) { currentState.page = 'game'; currentState.game = g; currentState.level = 1; initGame(); renderPage(); }
+function setLevel(l) { currentState.level = l; initGame(); renderPage(); }
+
+// ==================== RENDU ====================
+function renderPage() {
+    const main = document.getElementById('main-content');
+    updateBreadcrumb();
+    switch(currentState.page) {
+        case 'home': renderHomePage(main); break;
+        case 'period': renderPeriodPage(main); break;
+        case 'week': renderWeekPage(main); break;
+        case 'game': renderGamePage(main); break;
+    }
+}
+
+function updateBreadcrumb() {
+    const bc = document.getElementById('breadcrumb');
+    let html = '<span class="breadcrumb-item" onclick="goHome()">🏠 Accueil</span>';
+    if (currentState.period) {
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item" onclick="goToPeriod(${currentState.period})">${periodsData[currentState.period].icon} P${currentState.period}</span>`;
+    }
+    if (currentState.week) {
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item" onclick="goToWeek(${currentState.week})">S${currentState.week}</span>`;
+    }
+    if (currentState.game) {
+        const g = gamesConfig.find(x => x.id === currentState.game);
+        html += `<span class="breadcrumb-separator">›</span><span class="breadcrumb-item">${g.icon}</span>`;
+    }
+    bc.innerHTML = html;
+}
+
+function renderHomePage(c) {
+    const p = periodsData[4];
+    const weekIcons = {'17':'🎭', '18':'🌱', '19':'🌸', '20':'👑', '21':'😊'};
+    c.innerHTML = `
+        <div class="welcome-message">
+            <div class="welcome-icon">📖✨</div>
+            <h2>Bienvenue !</h2>
+            <p>Choisis ta semaine pour réviser les mots de la dictée.</p>
+        </div>
+        
+        <div class="method-card" id="method-toggle" onclick="toggleMethod()">
+            <h3><span>📚</span> Comment apprendre mes mots de dictée ? <span class="arrow">▼</span></h3>
+            <div class="subtitle">Clique pour découvrir la méthode en 8 étapes</div>
+        </div>
+        
+        <div class="method-content" id="method-content">
+            <div class="method-step">
+                <div class="step-icon">🔍</div>
+                <div class="step-content">
+                    <div class="step-title">1. Je repère la difficulté</div>
+                    <div class="step-text">Je lis le mot doucement et je cherche ce qui est difficile : lettre muette, double consonne, son spécial…</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">✅</div>
+                <div class="step-content">
+                    <div class="step-title">2. J'épelle et j'écris en regardant</div>
+                    <div class="step-text">J'épelle le mot à voix haute, puis je l'écris une première fois en regardant le modèle. Je vérifie lettre par lettre.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🙈</div>
+                <div class="step-content">
+                    <div class="step-title">3. J'écris de mémoire</div>
+                    <div class="step-text">Je cache le mot et j'essaie de l'écrire de mémoire, puis je compare avec le modèle et je corrige si besoin.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🎨</div>
+                <div class="step-content">
+                    <div class="step-title">4. Je surligne la partie difficile</div>
+                    <div class="step-text">Je surligne ou entoure en couleur la partie difficile du mot pour attirer mon attention.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">☝️</div>
+                <div class="step-content">
+                    <div class="step-title">5. J'utilise mon corps</div>
+                    <div class="step-text">J'écris le mot en grand avec mon doigt dans l'air ou sur la table, en disant les lettres.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">👨‍👩‍👧‍👦</div>
+                <div class="step-content">
+                    <div class="step-title">6. Je demande une dictée d'entraînement</div>
+                    <div class="step-text">Je demande à quelqu'un de me dicter les mots (parent, frère, sœur, camarade) sur une ardoise ou un cahier d'essai. Je recommence jusqu'à écrire chaque mot trois fois sans erreur.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">🧠</div>
+                <div class="step-content">
+                    <div class="step-title">7. Je révise un peu chaque jour</div>
+                    <div class="step-text">Je relis tous les mots plusieurs jours avant la dictée (un peu chaque jour plutôt que tout d'un coup) pour que mon cerveau les garde en mémoire.</div>
+                </div>
+            </div>
+            <div class="method-step">
+                <div class="step-icon">💭</div>
+                <div class="step-content">
+                    <div class="step-title">8. Je m'explique le mot</div>
+                    <div class="step-text">Je réfléchis à son sens, un mot de la même famille ou une phrase avec ce mot, pour mieux le retenir.</div>
+                </div>
+            </div>
+            
+            <div class="method-reminder">
+                <h4>⚠️ Petit rappel pour le jour de la dictée ⚠️</h4>
+                <ul>
+                    <li>Relis la phrase entière avant d'écrire.</li>
+                    <li>Pense aux accords (verbe, nom, adjectif).</li>
+                    <li>Relis-toi lentement en suivant chaque mot avec ton doigt.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section-title"><h2>🌷 Période 4 - Choisis ta semaine</h2></div>
+        <div class="weeks-grid">
+            ${Object.entries(p.weeks).map(([n, w]) => `
+                <div class="week-card" onclick="goToWeekDirect(${n})">
+                    <div class="icon">${weekIcons[n] || '📅'}</div>
+                    <h4>Semaine ${n}</h4>
+                    <div class="theme">${w.theme}</div>
+                    <div class="subtitle">${w.words.length} mots</div>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+function goToWeekDirect(w) {
+    currentState = { page: 'week', period: 4, week: w, game: null, level: 1 };
+    renderPage();
+}
+
+function toggleMethod() {
+    var card = document.getElementById('method-toggle');
+    var content = document.getElementById('method-content');
+    if (content.classList.contains('visible')) {
+        content.classList.remove('visible');
+        card.classList.remove('open');
+    } else {
+        content.classList.add('visible');
+        card.classList.add('open');
+    }
+}
+
+function renderPeriodPage(c) {
+    const p = periodsData[currentState.period];
+    const weekIcons = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    c.innerHTML = `
+        <div class="section-title"><h2>${p.icon} ${p.name}</h2><p>Choisis ta semaine</p></div>
+        <div class="weeks-grid">
+            ${Object.entries(p.weeks).map(([n, w]) => `
+                <div class="week-card" onclick="goToWeek(${n})">
+                    <div class="icon">${weekIcons[n-1] || '📅'}</div>
+                    <h4>Semaine ${n}</h4>
+                    <div class="theme">${w.theme}</div>
+                </div>
+            `).join('')}
+        </div>`;
+}
+
+function renderWeekPage(c) {
+    const p = periodsData[currentState.period], w = p.weeks[currentState.week];
+    c.innerHTML = `
+        <div class="section-title"><h2>${p.icon} Période ${currentState.period} - Semaine ${currentState.week}</h2><p>Thème : ${w.theme}</p></div>
+        
+        <div class="fiche-card" id="fiche-toggle" onclick="toggleFiche()">
+            <h3><span>📋</span> Fiche des mots à apprendre <span class="arrow">▼</span></h3>
+            <div class="subtitle">Clique pour voir les ${w.words.length} mots de la semaine</div>
+        </div>
+        
+        <div class="fiche-content" id="fiche-content">
+            <p style="text-align:center; color:var(--text-medium); margin-bottom:15px; font-size:0.95rem;">👆 Clique sur un mot pour voir un exemple</p>
+            <table class="words-table">
+                <thead><tr><th>Mot</th><th>Nature</th><th>Définition</th></tr></thead>
+                <tbody>${w.words.map((x, i) => `<tr>
+                    <td>
+                        <strong class="word-clickable" onclick="toggleExemple(event, ${i})">${x.word}</strong>
+                        <div class="exemple-box" id="exemple-${i}">${x.exemple || ''}</div>
+                    </td>
+                    <td>${formatTypes(x.type)}</td>
+                    <td>${x.definition}</td>
+                </tr>`).join('')}</tbody>
+            </table>
+        </div>
+        
+        <div class="section-title" style="margin-top:10px;"><h2>🎮 Choisis un jeu</h2></div>
+        <div class="games-grid">
+            ${gamesConfig.map(g => `<div class="game-card" onclick="goToGame('${g.id}')"><div class="icon">${g.icon}</div><h4>${g.name}</h4></div>`).join('')}
+        </div>`;
+}
+
+function toggleFiche() {
+    var card = document.getElementById('fiche-toggle');
+    var content = document.getElementById('fiche-content');
+    if (content.classList.contains('visible')) {
+        content.classList.remove('visible');
+        card.classList.remove('open');
+    } else {
+        content.classList.add('visible');
+        card.classList.add('open');
+    }
+}
+
+function toggleExemple(event, index) {
+    event.stopPropagation();
+    var box = document.getElementById('exemple-' + index);
+    if (box) {
+        if (box.classList.contains('visible')) {
+            box.classList.remove('visible');
+        } else {
+            var allBoxes = document.querySelectorAll('.exemple-box');
+            for (var i = 0; i < allBoxes.length; i++) {
+                allBoxes[i].classList.remove('visible');
+            }
+            box.classList.add('visible');
+        }
+    }
+}
+
+function formatType(t) { 
+    const labels = {nom:'Nom',verbe:'Verbe',adjectif:'Adjectif',invariable:'Invariable',determinant:'Dét.'};
+    return labels[t] || t; 
+}
+
+function formatTypes(types) {
+    if (!types) return '';
+    var typeArray = types.split('+');
+    var html = '<div class="types-container">';
+    for (var i = 0; i < typeArray.length; i++) {
+        var t = typeArray[i].trim();
+        html += '<span class="word-type ' + t + '">' + formatType(t) + '</span>';
+    }
+    html += '</div>';
+    return html;
+}
+
+function renderGamePage(c) {
+    const g = gamesConfig.find(x => x.id === currentState.game);
+    c.innerHTML = `
+        <div class="game-page">
+            <div class="game-header">
+                <h2>${g.icon} ${g.name}</h2>
+                <div class="game-instruction">${g.instruction}</div>
+                <div class="level-selector">
+                    <button class="level-btn level-1 ${currentState.level===1?'active':''}" onclick="setLevel(1)">⭐ Niveau 1</button>
+                    <button class="level-btn level-2 ${currentState.level===2?'active':''}" onclick="setLevel(2)">⭐⭐ Niveau 2</button>
+                    <button class="level-btn level-3 ${currentState.level===3?'active':''}" onclick="setLevel(3)">⭐⭐⭐ Niveau 3</button>
+                </div>
+            </div>
+            <div class="game-area" id="game-area"></div>
+            <div style="text-align:center;"><button class="btn btn-back" onclick="goToWeek(${currentState.week})">← Retour</button></div>
+        </div>`;
+    renderGameContent();
+}
+
+// ==================== JEUX ====================
+function getCurrentWords() { return periodsData[currentState.period].weeks[currentState.week].words; }
+function getWordsForLevel(l) {
+    const w = getCurrentWords(), s = [...w].sort((a,b) => a.word.length - b.word.length);
+    if(l===1) return s.slice(0, Math.ceil(w.length*0.4));
+    if(l===2) return s.slice(Math.floor(w.length*0.2), Math.ceil(w.length*0.8));
+    return w;
+}
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function initGame() {
+    gameState = {};
+    const w = getWordsForLevel(currentState.level);
+    switch(currentState.game) {
+        case 'pendu': initPendu(w); break;
+        case 'memory': initMemory(w); break;
+        case 'course': initCourse(w); break;
+        case 'anagramme': initAnagramme(w); break;
+        case 'qcm': initQCM(w); break;
+        case 'nature': initNature(w); break;
+        case 'croises': initCroises(w); break;
+        case 'attrape': initAttrape(w); break;
+    }
+}
+
+function renderGameContent() {
+    const a = document.getElementById('game-area'); if(!a) return;
+    switch(currentState.game) {
+        case 'pendu': renderPendu(a); break;
+        case 'memory': renderMemory(a); break;
+        case 'course': renderCourse(a); break;
+        case 'anagramme': renderAnagramme(a); break;
+        case 'qcm': renderQCM(a); break;
+        case 'nature': renderNature(a); break;
+        case 'croises': renderCroises(a); break;
+        case 'attrape': renderAttrape(a); break;
+    }
+}
+
+// PENDU
+function initPendu(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    // Extraire juste le mot sans le déterminant
+    let motSeul = word.word.toLowerCase();
+    if (motSeul.startsWith('un ') || motSeul.startsWith('le ') || motSeul.startsWith('la ')) {
+        motSeul = motSeul.substring(3);
+    } else if (motSeul.startsWith('une ') || motSeul.startsWith('les ') || motSeul.startsWith('des ')) {
+        motSeul = motSeul.substring(4);
+    } else if (motSeul.startsWith("l'") || motSeul.startsWith("l'")) {
+        motSeul = motSeul.substring(2);
+    } else if (motSeul.startsWith("de l'") || motSeul.startsWith("de l'")) {
+        motSeul = motSeul.substring(5);
+    }
+    gameState = { word: motSeul, def: word.definition, guessed: [], errors: 0, maxErrors: currentState.level===1?10:(currentState.level===2?7:5), won: false, lost: false };
+}
+function renderPendu(a) {
+    const {word,def,guessed,errors,maxErrors,won,lost} = gameState;
+    // Fonction pour vérifier si une lettre est devinée (gère les accents)
+    function isLetterGuessed(l) {
+        const base = removeAccents(l);
+        return guessed.includes(base);
+    }
+    const display = word.split('').map(l => l===' '?' ':(l==='-'?'-':(l==="'"||l==="'"?"'":(isLetterGuessed(l)?l:'_')))).join('');
+    const lives = '❤️'.repeat(maxErrors-errors)+'🖤'.repeat(errors);
+    const alpha = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    a.innerHTML = `
+        <div class="hangman-lives">${lives}</div>
+        <div style="color:var(--text-medium);margin-bottom:8px;font-style:italic;font-size:0.95rem;">💡 ${def}</div>
+        <div class="hangman-word">${display}</div>
+        ${won?'<div class="feedback success">🎉 Bravo !</div>':''}
+        ${lost?`<div class="feedback error">😢 C'était : <strong>${word}</strong></div>`:''}
+        <div class="keyboard">
+            ${alpha.map(l => `<button class="key-btn ${guessed.includes(l)?(wordContainsLetter(gameState.word,l)?'correct':'wrong'):''}" onclick="guessPendu('${l}')" ${guessed.includes(l)||won||lost?'disabled':''}>${l}</button>`).join('')}
+        </div>
+        ${won||lost?`<button class="btn btn-primary" style="margin-top:18px;" onclick="initGame();renderGameContent();">🔄 Nouveau mot</button>`:''}`;
+}
+function removeAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+function wordContainsLetter(word, letter) {
+    for (var i = 0; i < word.length; i++) {
+        if (removeAccents(word[i]) === letter) return true;
+    }
+    return false;
+}
+function guessPendu(l) {
+    if(gameState.guessed.includes(l)||gameState.won||gameState.lost) return;
+    gameState.guessed.push(l);
+    if(!wordContainsLetter(gameState.word, l)) gameState.errors++;
+    // Vérifier si toutes les lettres sont trouvées
+    var allFound = true;
+    for (var i = 0; i < gameState.word.length; i++) {
+        var c = gameState.word[i];
+        if (c !== ' ' && c !== '-' && c !== "'" && c !== "'") {
+            if (!gameState.guessed.includes(removeAccents(c))) {
+                allFound = false;
+                break;
+            }
+        }
+    }
+    if(allFound) gameState.won=true;
+    else if(gameState.errors>=gameState.maxErrors) gameState.lost=true;
+    renderGameContent();
+}
+
+// MEMORY
+function initMemory(w) {
+    const n = currentState.level===1?4:(currentState.level===2?6:8);
+    const sel = shuffle(w).slice(0,n);
+    const cards = [];
+    sel.forEach((x,i) => { cards.push({id:i*2,type:'word',content:x.word,pairId:i}); cards.push({id:i*2+1,type:'def',content:x.definition,pairId:i}); });
+    gameState = { cards: shuffle(cards), flipped: [], matched: [], moves: 0 };
+}
+function renderMemory(a) {
+    const {cards,flipped,matched,moves} = gameState;
+    const done = matched.length===cards.length/2;
+    a.innerHTML = `
+        <div class="score-display">Coups: ${moves} | Paires: ${matched.length}/${cards.length/2}</div>
+        ${done?'<div class="feedback success">🎉 Bravo !</div>':''}
+        <div class="memory-grid" style="grid-template-columns:repeat(${cards.length<=8?4:4},1fr);">
+            ${cards.map(c => `<div class="memory-card ${flipped.includes(c.id)||matched.includes(c.pairId)?'flipped':''} ${matched.includes(c.pairId)?'matched':''}" onclick="flipMemory(${c.id})"><span class="card-back">❓</span><span class="card-content">${c.content}</span></div>`).join('')}
+        </div>
+        ${done?`<button class="btn btn-primary" style="margin-top:18px;" onclick="initGame();renderGameContent();">🔄 Rejouer</button>`:''}`;
+}
+function flipMemory(id) {
+    if(gameState.flipped.length>=2) return;
+    if(gameState.flipped.includes(id)) return;
+    const card = gameState.cards.find(c=>c.id===id);
+    if(gameState.matched.includes(card.pairId)) return;
+    gameState.flipped.push(id);
+    renderGameContent();
+    if(gameState.flipped.length===2) {
+        gameState.moves++;
+        const [a,b] = gameState.flipped;
+        const ca = gameState.cards.find(c=>c.id===a), cb = gameState.cards.find(c=>c.id===b);
+        if(ca.pairId===cb.pairId) { gameState.matched.push(ca.pairId); gameState.flipped=[]; renderGameContent(); }
+        else { setTimeout(()=>{ gameState.flipped=[]; renderGameContent(); },1200); }
+    }
+}
+
+// COURSE
+function initCourse(w) {
+    const displayTime = currentState.level===1?8:(currentState.level===2?5:3);
+    gameState = { words:shuffle(w).slice(0,5), idx:0, score:0, displayTime:displayTime, showingWord:false, canType:false, running:false, finished:false };
+}
+function renderCourse(a) {
+    const {words,idx,score,displayTime,showingWord,canType,running,finished,timeLeft} = gameState;
+    const cur = words[idx];
+    const levelText = currentState.level===1?'Le mot s\'affiche 8 secondes':(currentState.level===2?'Le mot s\'affiche 5 secondes':'Le mot s\'affiche 3 secondes');
+    a.innerHTML = `
+        ${!running&&!finished?`<div style="text-align:center;"><div style="font-size:3.5rem;margin-bottom:18px;">🏃</div><p style="font-size:1.1rem;margin-bottom:8px;">${levelText}</p><p style="color:var(--text-medium);margin-bottom:18px;">Mémorise-le puis écris-le !</p><button class="btn btn-primary" onclick="startCourse()">▶️ Commencer</button></div>`:''}
+        ${running?`
+            <div class="score-display">Mot ${idx+1}/${words.length} | Score: ${score}</div>
+            ${showingWord?`
+                <div class="race-timer" style="font-size:2rem;color:var(--primary);">👀 ${timeLeft}s</div>
+                <div class="race-word">${cur.word}</div>
+                <div style="color:var(--text-medium);margin-top:10px;">💡 ${cur.definition}</div>
+                <div style="margin-top:15px;color:var(--text-light);">Regarde bien le mot...</div>
+            `:`
+                <div style="color:var(--success);font-size:1.2rem;margin-bottom:15px;">✏️ À toi d'écrire !</div>
+                <div style="color:var(--text-medium);margin-bottom:15px;">💡 ${cur.definition}</div>
+                <input type="text" class="race-input" id="race-input" placeholder="Tape le mot..." oninput="checkCourse(this.value)" autocomplete="off">
+                <div style="margin-top:10px;color:var(--text-light);font-size:0.9rem;">Prends ton temps, pas de limite !</div>
+            `}
+        `:''}
+        ${finished?`<div class="feedback ${score>=words.length*0.6?'success':'info'}">${score>=words.length*0.6?'🎉':'👏'} Score: ${score}/${words.length}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Rejouer</button>`:''}`;
+    if(running && canType) document.getElementById('race-input')?.focus();
+}
+function startCourse() {
+    gameState.running=true; 
+    gameState.showingWord=true;
+    gameState.canType=false;
+    gameState.timeLeft=gameState.displayTime;
+    renderGameContent();
+    
+    // Phase 1: Afficher le mot pendant displayTime secondes
+    gameState.timer = setInterval(function(){
+        gameState.timeLeft--;
+        if(gameState.timeLeft<=0) {
+            clearInterval(gameState.timer);
+            // Phase 2: Cacher le mot et permettre l'écriture (sans limite de temps)
+            gameState.showingWord=false;
+            gameState.canType=true;
+            renderGameContent();
+        } else {
+            renderGameContent();
+        }
+    },1000);
+}
+function checkCourse(v) { 
+    if(gameState.canType) {
+        // Extraire le mot sans déterminant pour la comparaison
+        var motAttendu = gameState.words[gameState.idx].word.toLowerCase();
+        if (motAttendu.startsWith('un ') || motAttendu.startsWith('le ') || motAttendu.startsWith('la ')) {
+            motAttendu = motAttendu.substring(3);
+        } else if (motAttendu.startsWith('une ') || motAttendu.startsWith('les ') || motAttendu.startsWith('des ')) {
+            motAttendu = motAttendu.substring(4);
+        } else if (motAttendu.startsWith("l'") || motAttendu.startsWith("l'")) {
+            motAttendu = motAttendu.substring(2);
+        } else if (motAttendu.startsWith("de l'") || motAttendu.startsWith("de l'")) {
+            motAttendu = motAttendu.substring(5);
+        }
+        if(v.toLowerCase().trim() === motAttendu) { 
+            gameState.score++; 
+            nextCourse(); 
+        }
+    }
+}
+function nextCourse() {
+    clearInterval(gameState.timer); 
+    gameState.idx++;
+    if(gameState.idx>=gameState.words.length) { 
+        gameState.running=false; 
+        gameState.finished=true; 
+        renderGameContent(); 
+    } else { 
+        // Passer au mot suivant
+        gameState.showingWord=true;
+        gameState.canType=false;
+        gameState.timeLeft=gameState.displayTime;
+        renderGameContent(); 
+        
+        // Relancer le timer pour le nouveau mot
+        gameState.timer = setInterval(function(){
+            gameState.timeLeft--;
+            if(gameState.timeLeft<=0) {
+                clearInterval(gameState.timer);
+                gameState.showingWord=false;
+                gameState.canType=true;
+                renderGameContent();
+            } else {
+                renderGameContent();
+            }
+        },1000);
+    }
+}
+
+// ANAGRAMME
+function initAnagramme(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    let letters = word.word.toLowerCase().replace(/\s/g,'').split('');
+    const traps = [];
+    if(currentState.level===3) { const al='aeiounrstl'; for(let i=0;i<2;i++) traps.push(al[Math.floor(Math.random()*al.length)]); }
+    gameState = { word:word.word.toLowerCase().replace(/\s/g,''), def:word.definition, letters:shuffle([...letters,...traps]), answer:[], usedIdx:[], won:false };
+}
+function renderAnagramme(a) {
+    const {word,def,letters,answer,usedIdx,won} = gameState;
+    a.innerHTML = `
+        <div style="color:var(--text-medium);margin-bottom:15px;">💡 ${def}</div>
+        ${currentState.level===3?'<div style="color:var(--danger);font-size:0.85rem;">⚠️ Attention aux lettres pièges !</div>':''}
+        <div class="answer-zone">${answer.map((l,i)=>`<div class="answer-letter" onclick="removeAna(${i})">${l}</div>`).join('')}</div>
+        <div class="anagram-letters">${letters.map((l,i)=>`<div class="letter-tile ${usedIdx.includes(i)?'used':''}" onclick="addAna('${l}',${i})">${l}</div>`).join('')}</div>
+        ${won?'<div class="feedback success">🎉 Bravo !</div>':''}
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:18px;">
+            <button class="btn btn-secondary" onclick="clearAna()">🗑️ Effacer</button>
+            <button class="btn btn-primary" onclick="checkAna()">✓ Vérifier</button>
+        </div>
+        ${won?`<button class="btn btn-primary" style="margin-top:12px;" onclick="initGame();renderGameContent();">🔄 Nouveau mot</button>`:''}`;
+}
+function addAna(l,i) { if(gameState.usedIdx.includes(i)) return; gameState.answer.push(l); gameState.usedIdx.push(i); renderGameContent(); }
+function removeAna(i) { const l=gameState.answer[i]; gameState.answer.splice(i,1); const li=gameState.usedIdx.find(x=>gameState.letters[x]===l); gameState.usedIdx=gameState.usedIdx.filter(x=>x!==li); renderGameContent(); }
+function clearAna() { gameState.answer=[]; gameState.usedIdx=[]; renderGameContent(); }
+function checkAna() { if(gameState.answer.join('')===gameState.word) gameState.won=true; renderGameContent(); }
+
+// QCM
+function initQCM(w) {
+    const word = w[Math.floor(Math.random()*w.length)];
+    const dist = genDistractors(word.word,currentState.level);
+    gameState = { word:word, options:shuffle([word.word,...dist]), selected:null, correct:false };
+}
+function genDistractors(w,l) {
+    const d=[], x=w.toLowerCase();
+    if(l===1) { d.push(x.split('').reverse().join('')); d.push(x.slice(0,Math.ceil(x.length/2))+'xx'); }
+    else if(l===2) { d.push(x.replace('ou','u')); d.push(x+'s'); }
+    else { d.push(x.replace(/([aeiou])/i,m=>m==='a'?'e':'a')); d.push(x.replace('s','ss')); }
+    while(d.length<2) d.push(x+'e');
+    return d.slice(0,2).filter(y=>y!==x);
+}
+function renderQCM(a) {
+    const {word,options,selected,correct} = gameState;
+    a.innerHTML = `
+        <div style="color:var(--text-medium);margin-bottom:12px;font-style:italic;">💡 ${word.definition}</div>
+        <div class="qcm-sentence">Quel est le bon mot ?</div>
+        <div class="qcm-options">
+            ${options.map((o,i)=>`<div class="qcm-option ${selected===i?(o===word.word?'correct':'wrong'):''}" onclick="selectQCM(${i},'${o}')" ${selected!==null?'style="pointer-events:none;"':''}>${o}</div>`).join('')}
+        </div>
+        ${selected!==null?`<div class="feedback ${correct?'success':'error'}">${correct?'🎉 Bravo !':'😢 C\'était : <strong>'+word.word+'</strong>'}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Suivant</button>`:''}`;
+}
+function selectQCM(i,o) { gameState.selected=i; gameState.correct=o===gameState.word.word; renderGameContent(); }
+
+// NATURE
+function initNature(w) {
+    // Définir les options selon le niveau
+    let opts = currentState.level===1 ? ['nom','verbe'] : 
+               (currentState.level===2 ? ['nom','verbe','adjectif'] : 
+               ['nom','verbe','adjectif','invariable']);
+    
+    // Préparer les mots avec leur type principal
+    let wordsWithMainType = [];
+    for (var i = 0; i < w.length; i++) {
+        var mot = w[i];
+        var mainType = mot.type;
+        
+        // Extraire le type principal
+        if (mainType.includes('+')) {
+            mainType = mainType.split('+')[1]; // "determinant+nom" -> "nom"
+        }
+        
+        // Ne garder que les mots dont le type est dans les options
+        if (opts.indexOf(mainType) >= 0) {
+            wordsWithMainType.push({
+                word: mot.word,
+                definition: mot.definition,
+                mainType: mainType
+            });
+        }
+    }
+    
+    // Choisir un mot au hasard parmi ceux valides
+    if (wordsWithMainType.length === 0) {
+        // Fallback : prendre n'importe quel mot
+        var mot = w[Math.floor(Math.random()*w.length)];
+        var mainType = mot.type.includes('+') ? mot.type.split('+')[1] : mot.type;
+        wordsWithMainType.push({
+            word: mot.word,
+            definition: mot.definition,
+            mainType: mainType
+        });
+        // S'assurer que le type est dans les options
+        if (opts.indexOf(mainType) < 0) {
+            opts.push(mainType);
+        }
+    }
+    
+    var chosen = wordsWithMainType[Math.floor(Math.random()*wordsWithMainType.length)];
+    
+    gameState = { 
+        word: chosen.word, 
+        definition: chosen.definition,
+        mainType: chosen.mainType, 
+        options: opts, 
+        selected: null, 
+        correct: false 
+    };
+}
+
+function renderNature(a) {
+    const {word, definition, mainType, options, selected, correct} = gameState;
+    const labels = {nom:'Nom', verbe:'Verbe', adjectif:'Adjectif', invariable:'Invariable', determinant:'Déterminant'};
+    
+    // Extraire juste le mot sans le déterminant pour l'affichage
+    let motAffiche = word;
+    if (motAffiche.startsWith('un ') || motAffiche.startsWith('le ') || motAffiche.startsWith('la ')) {
+        motAffiche = motAffiche.substring(3);
+    } else if (motAffiche.startsWith('une ') || motAffiche.startsWith('les ') || motAffiche.startsWith('des ')) {
+        motAffiche = motAffiche.substring(4);
+    } else if (motAffiche.startsWith("l'") || motAffiche.startsWith("l'")) {
+        motAffiche = motAffiche.substring(2);
+    } else if (motAffiche.startsWith("de l'") || motAffiche.startsWith("de l'")) {
+        motAffiche = motAffiche.substring(5);
+    }
+    
+    a.innerHTML = `
+        <div class="quiz-word">${motAffiche}</div>
+        <div style="color:var(--text-medium);margin-bottom:25px;">${definition}</div>
+        <div class="nature-options">
+            ${options.map(o=>`<button class="nature-btn ${o} ${selected===o?(o===mainType?'correct':'wrong'):''}" onclick="selectNature('${o}')" ${selected!==null?'disabled':''}>${labels[o] || o}</button>`).join('')}
+        </div>
+        ${selected!==null?`<div class="feedback ${correct?'success':'error'}">${correct?'🎉 Bravo !':'😢 C\'est un <strong>'+(labels[mainType] || mainType)+'</strong>'}</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Suivant</button>`:''}`;
+}
+
+function selectNature(t) { 
+    gameState.selected = t; 
+    gameState.correct = (t === gameState.mainType); 
+    renderGameContent(); 
+}
+
+// MOTS CROISES
+function initCroises(w) {
+    const short = w.filter(x=>x.word.length<=8&&!x.word.includes(' '));
+    const sel = shuffle(short).slice(0, currentState.level===1?3:(currentState.level===2?4:5));
+    const grid = Array(12).fill(null).map(()=>Array(12).fill(null));
+    const clues = {across:[],down:[]};
+    let row=1,col=1;
+    sel.forEach((x,i) => {
+        const wd = x.word.toLowerCase();
+        if(i%2===0) { for(let j=0;j<wd.length;j++) grid[row][col+j]={letter:wd[j],given:currentState.level===1&&j===0}; clues.across.push({num:i+1,clue:x.definition,row,col}); row+=2; }
+        else { for(let j=0;j<wd.length;j++) grid[row+j][col]={letter:wd[j],given:currentState.level===1&&j===0}; clues.down.push({num:i+1,clue:x.definition,row,col}); col+=3; }
+    });
+    gameState = { grid, clues, userInput:{}, won:false };
+}
+function renderCroises(a) {
+    const {grid,clues,userInput,won} = gameState;
+    let minR=12,maxR=0,minC=12,maxC=0;
+    grid.forEach((r,ri)=>r.forEach((c,ci)=>{if(c){minR=Math.min(minR,ri);maxR=Math.max(maxR,ri);minC=Math.min(minC,ci);maxC=Math.max(maxC,ci);}}));
+    a.innerHTML = `
+        <div class="crossword-container">
+            <div class="crossword-grid" style="grid-template-columns:repeat(${maxC-minC+1},36px);">
+                ${grid.slice(minR,maxR+1).map((r,ri)=>r.slice(minC,maxC+1).map((c,ci)=>{
+                    if(!c) return '<div class="crossword-cell blocked"></div>';
+                    const k=`${ri+minR}-${ci+minC}`, v=c.given?c.letter:(userInput[k]||'');
+                    return `<input type="text" class="crossword-cell ${c.given?'given':''}" maxlength="1" value="${v}" ${c.given?'readonly':''} oninput="updateCroises('${k}',this.value)">`;
+                }).join('')).join('')}
+            </div>
+            <div class="crossword-clues">
+                <div class="clue-group"><h4>→ Horizontal</h4>${clues.across.map(c=>`<div class="clue-item">${c.num}. ${c.clue}</div>`).join('')}</div>
+                <div class="clue-group"><h4>↓ Vertical</h4>${clues.down.map(c=>`<div class="clue-item">${c.num}. ${c.clue}</div>`).join('')}</div>
+            </div>
+            <button class="btn btn-primary" onclick="checkCroises()">✓ Vérifier</button>
+            ${won?`<div class="feedback success">🎉 Bravo !</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Nouvelle grille</button>`:''}
+        </div>`;
+}
+function updateCroises(k,v) { gameState.userInput[k]=v.toLowerCase(); }
+function checkCroises() {
+    let ok=true;
+    gameState.grid.forEach((r,ri)=>r.forEach((c,ci)=>{if(c&&!c.given){const k=`${ri}-${ci}`;if(gameState.userInput[k]?.toLowerCase()!==c.letter)ok=false;}}));
+    if(ok) gameState.won=true;
+    renderGameContent();
+}
+
+// ATTRAPE-MOT
+function initAttrape(w) {
+    const dw = w.map(x => x.word);
+    const intruders = genIntruders(dw, currentState.level);
+    gameState = { 
+        dictWords: dw, 
+        allWords: shuffle([...dw, ...intruders]), 
+        falling: [], 
+        score: 0, 
+        errors: 0, 
+        timeLeft: 30, 
+        running: false, 
+        finished: false, 
+        speed: currentState.level === 1 ? 2000 : (currentState.level === 2 ? 1500 : 1000), 
+        wordId: 0 
+    };
+}
+function genIntruders(dw, l) {
+    const common = ['maison', 'table', 'chaise', 'livre', 'arbre', 'fleur', 'chat', 'chien', 'soleil', 'lune', 'pomme', 'orange', 'voiture', 'avion', 'train', 'école', 'jardin', 'fenêtre', 'porte', 'route'];
+    if (l === 1) return shuffle(common).slice(0, dw.length);
+    const intr = [];
+    dw.forEach(x => {
+        if (x.length > 2) intr.push(x.slice(0, -1) + 'e');
+        intr.push(x + 's');
+    });
+    intr.push(...shuffle(common).slice(0, 4));
+    return shuffle(intr).slice(0, dw.length);
+}
+function renderAttrape(a) {
+    if (!gameState.running && !gameState.finished) {
+        a.innerHTML = '<div style="text-align:center;"><div style="font-size:3.5rem;margin-bottom:18px;">🎮</div><p style="font-size:1.1rem;margin-bottom:8px;">Clique sur les mots de la dictée !</p><p style="color:var(--text-medium);margin-bottom:18px;">Évite les intrus !</p><button class="btn btn-primary" onclick="startAttrape()">▶️ Jouer</button></div>';
+    } else if (gameState.finished) {
+        a.innerHTML = '<div class="feedback ' + (gameState.score >= 5 ? 'success' : 'info') + '">' + (gameState.score >= 5 ? '🎉' : '👏') + ' Score: ' + gameState.score + ' ✅ | ' + gameState.errors + ' ❌</div><button class="btn btn-primary" onclick="initGame();renderGameContent();">🔄 Rejouer</button>';
+    } else {
+        a.innerHTML = '<div class="catch-game" id="catch-game"><div class="catch-timer">⏱️ ' + gameState.timeLeft + 's</div><div class="catch-score">✅ ' + gameState.score + ' | ❌ ' + gameState.errors + '</div></div>';
+    }
+}
+
+function attrapeClickHandler(e) {
+    var target = e.target;
+    if (!target.classList.contains('falling-word')) return;
+    if (target.getAttribute('data-clicked') === 'true') return;
+    
+    var word = target.getAttribute('data-word');
+    var id = parseInt(target.getAttribute('data-id'));
+    
+    target.setAttribute('data-clicked', 'true');
+    
+    if (gameState.dictWords.indexOf(word) >= 0) {
+        gameState.score++;
+        target.className = 'falling-word correct';
+    } else {
+        gameState.errors++;
+        target.className = 'falling-word wrong';
+    }
+    
+    var scoreEl = document.querySelector('.catch-score');
+    if (scoreEl) scoreEl.innerText = '✅ ' + gameState.score + ' | ❌ ' + gameState.errors;
+    
+    gameState.falling = gameState.falling.filter(function(f) { return f.id !== id; });
+    
+    setTimeout(function() {
+        if (target.parentNode) target.parentNode.removeChild(target);
+    }, 250);
+}
+
+function startAttrape() {
+    gameState.running = true;
+    gameState.timeLeft = 30;
+    gameState.falling = [];
+    gameState.wordId = 0;
+    gameState.score = 0;
+    gameState.errors = 0;
+    
+    var area = document.getElementById('game-area');
+    area.innerHTML = '<div class="catch-game" id="catch-game"><div class="catch-timer">⏱️ 30s</div><div class="catch-score">✅ 0 | ❌ 0</div></div>';
+    
+    var container = document.getElementById('catch-game');
+    container.addEventListener('click', attrapeClickHandler);
+    
+    gameState.mainTimer = setInterval(function() {
+        gameState.timeLeft--;
+        var timer = document.querySelector('.catch-timer');
+        if (timer) timer.innerText = '⏱️ ' + gameState.timeLeft + 's';
+        if (gameState.timeLeft <= 0) endAttrape();
+    }, 1000);
+    
+    spawnAttrapeWord();
+    gameState.spawnTimer = setInterval(spawnAttrapeWord, gameState.speed);
+    
+    gameState.fallTimer = setInterval(function() {
+        var container = document.getElementById('catch-game');
+        if (!container) return;
+        
+        for (var i = 0; i < gameState.falling.length; i++) {
+            gameState.falling[i].y += 2;
+            var el = container.querySelector('[data-id="' + gameState.falling[i].id + '"]');
+            if (el) el.style.top = gameState.falling[i].y + 'px';
+        }
+        
+        gameState.falling = gameState.falling.filter(function(f) {
+            if (f.y > 330) {
+                var el = container.querySelector('[data-id="' + f.id + '"]');
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+                return false;
+            }
+            return true;
+        });
+    }, 50);
+}
+
+function spawnAttrapeWord() {
+    if (!gameState.running) return;
+    var container = document.getElementById('catch-game');
+    if (!container) return;
+    
+    var w = gameState.allWords[Math.floor(Math.random() * gameState.allWords.length)];
+    var id = gameState.wordId++;
+    
+    // Trouver une position X qui ne chevauche pas les mots existants en haut
+    var x;
+    var attempts = 0;
+    var minDistance = 25; // Distance minimum entre les mots (en %)
+    
+    do {
+        x = 5 + Math.random() * 65;
+        var tooClose = false;
+        
+        // Vérifier la distance avec les mots récents (y < 80px)
+        for (var i = 0; i < gameState.falling.length; i++) {
+            if (gameState.falling[i].y < 80) {
+                if (Math.abs(gameState.falling[i].x - x) < minDistance) {
+                    tooClose = true;
+                    break;
+                }
+            }
+        }
+        
+        attempts++;
+        if (!tooClose || attempts > 10) break;
+    } while (true);
+    
+    var div = document.createElement('div');
+    div.className = 'falling-word';
+    div.innerText = w;
+    div.setAttribute('data-word', w);
+    div.setAttribute('data-id', id);
+    div.style.left = x + '%';
+    div.style.top = '0px';
+    
+    container.appendChild(div);
+    gameState.falling.push({ id: id, word: w, x: x, y: 0 });
+}
+function endAttrape() {
+    clearInterval(gameState.mainTimer);
+    clearInterval(gameState.spawnTimer);
+    clearInterval(gameState.fallTimer);
+    gameState.running = false;
+    gameState.finished = true;
+    renderGameContent();
+}
+
+// INIT
+document.addEventListener('DOMContentLoaded', renderPage);
+    </script>
+</body>
+</html>
